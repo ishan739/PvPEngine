@@ -12,6 +12,9 @@ import java.util.UUID;
 @Builder
 public class PlayerResponse {
     private UUID id;
+    private UUID gameId;
+    private String externalPlayerId;
+    private int rating;
     private String username;
     private String email;
     private OffsetDateTime createdAt;
@@ -22,6 +25,9 @@ public class PlayerResponse {
     public static PlayerResponse from(Player player) {
         return PlayerResponse.builder()
                 .id(player.getId())
+                .gameId(player.getGameId())
+                .externalPlayerId(player.getExternalPlayerId())
+                .rating(player.getRating())
                 .username(player.getUsername())
                 .email(player.getEmail())
                 .createdAt(player.getCreatedAt())

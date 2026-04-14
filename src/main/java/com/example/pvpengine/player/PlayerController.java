@@ -38,6 +38,12 @@ public class PlayerController {
         return ResponseEntity.ok(ApiResponse.ok(playerService.getPlayerByUsername(username)));
     }
 
+    @GetMapping("/external/{externalPlayerId}")
+    public ResponseEntity<ApiResponse<PlayerResponse>> getByExternalId(
+            @PathVariable String externalPlayerId){
+        return ResponseEntity.ok(ApiResponse.ok(playerService.getPlayerByExternalId(externalPlayerId)));
+    }
+
     @PatchMapping("/{id}/ban")
     public ResponseEntity<ApiResponse<PlayerResponse>> ban(
             @PathVariable UUID id,

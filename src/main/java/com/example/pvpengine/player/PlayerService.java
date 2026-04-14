@@ -10,6 +10,7 @@ public interface PlayerService {
     PlayerResponse createPlayer(CreatePlayerRequest request);
     PlayerResponse getPlayerById(UUID id);
     PlayerResponse getPlayerByUsername(String username);
+    PlayerResponse getPlayerByExternalId(String externalPlayerId);
     PlayerResponse banPlayer(UUID id , String reason);
     PlayerResponse unbanPlayer(UUID id);
     void updateLastActive(UUID id);
