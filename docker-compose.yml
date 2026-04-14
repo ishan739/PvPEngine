@@ -1,0 +1,16 @@
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pvp-postgres
+    environment:
+      POSTGRES_DB: pvpengine
+      POSTGRES_USER: pvp
+      POSTGRES_PASSWORD: pvpsecret
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
