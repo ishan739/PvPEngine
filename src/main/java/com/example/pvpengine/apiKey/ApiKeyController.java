@@ -19,11 +19,12 @@ public class ApiKeyController {
 
     private final ApiKeyService apiKeyService;
 
+    @PostMapping
     public ResponseEntity<ApiResponse<ApiKeyResponse>> generateKey(
-            @PathVariable UUID gameid,
+            @PathVariable UUID gameId,
             @RequestBody(required = false) GenerateApiKeyRequest request
             ) {
-        ApiKeyResponse body = apiKeyService.generateKey(gameid,request);
+        ApiKeyResponse body = apiKeyService.generateKey(gameId,request);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ApiResponse.ok(body , "Api key generated. Store raw key securely- it will never be shown again")
         );

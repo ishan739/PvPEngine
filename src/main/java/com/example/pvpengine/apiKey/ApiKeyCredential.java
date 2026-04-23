@@ -17,7 +17,7 @@ import java.util.UUID;
 public class ApiKeyCredential {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "game_id" , nullable = false)

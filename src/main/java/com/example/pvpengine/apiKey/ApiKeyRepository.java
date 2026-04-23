@@ -1,5 +1,6 @@
 package com.example.pvpengine.apiKey;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,9 @@ public interface ApiKeyRepository extends JpaRepository<ApiKeyCredential , UUID>
     List<ApiKeyCredential> findAllByGameId(UUID gameId);
 
     @Modifying
-    @Query("UPDATE ApiKeyCredential a SET a.lastUsedAt = :now WHERE a.id = :id ")
-    void updateLastUsedAt(UUID uuid, OffsetDateTime now);
+    @Query("UPDATE ApiKeyCredential a SET a.lastUsedAt = :now WHERE a.id = :id")
+    void updateLastUsedAt(
+            @Param("id") UUID id,
+            @Param("now") OffsetDateTime now
+    );
 }

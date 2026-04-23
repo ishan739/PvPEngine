@@ -60,7 +60,7 @@ public class ApiKeyServiceImpl implements ApiKeyService{
 
     @Transactional
     @Override
-    public ApiKeyResponse revokeKey(UUID keyId, UUID gameId) {
+    public ApiKeyResponse revokeKey(UUID gameId, UUID keyId) {
         ApiKeyCredential credential = apiKeyRepository.findById(keyId)
                 .orElseThrow(() -> PvpException.notFound("Api key not found: " + keyId));
 
@@ -120,7 +120,7 @@ public class ApiKeyServiceImpl implements ApiKeyService{
         try{
             apiKeyRepository.updateLastUsedAt(credential.getId() , OffsetDateTime.now());
         } catch (Exception e){
-            log.warn("Failed to update lastUsedAt for key prefix={}" ,  prefix , e);
+            log.error("Failed to update lastUsedAt for key prefix={}" ,  prefix , e);
         }
 
         return Optional.of(credential.getGameId());

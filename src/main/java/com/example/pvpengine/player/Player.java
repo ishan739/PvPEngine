@@ -25,7 +25,7 @@ import java.util.UUID;
 @Builder
 public class Player {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "game_id" , nullable = false, updatable = false)
@@ -52,7 +52,7 @@ public class Player {
 
     @Column(name = "is_banned", nullable = false)
     @Builder.Default
-    private boolean banned;
+    private boolean banned = false;
 
     @Column(name = "ban_reason")
     private String banReason;
