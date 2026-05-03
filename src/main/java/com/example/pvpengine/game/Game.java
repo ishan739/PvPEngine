@@ -29,7 +29,7 @@ public class Game {
     @Column(name = "contact_email", nullable = false)
     private String contactEmail;
 
-    @Column(name = "webhook_url" , length = 500)
+    @Column(name = "webhook_url" , length = 500 , nullable = false , unique = true)
     private String webhookUrl;
 
     @Enumerated(EnumType.STRING)

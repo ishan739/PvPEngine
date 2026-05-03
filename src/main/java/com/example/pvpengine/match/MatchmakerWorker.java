@@ -3,6 +3,9 @@ package com.example.pvpengine.match;
 import com.example.pvpengine.game.Game;
 import com.example.pvpengine.game.GameRepository;
 import com.example.pvpengine.game.GameStatus;
+import com.example.pvpengine.player.Player;
+import com.example.pvpengine.player.PlayerRepository;
+import com.example.pvpengine.webhook.WebhookDeliveryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -10,10 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -22,6 +22,8 @@ public class MatchmakerWorker {
     private final MatchmakingQueueService queueService;
     private final GameRepository gameRepository;
     private final MatchRepository matchRepository;
+    private final PlayerRepository playerRepository;
+    private final WebhookDeliveryService webhookDeliveryService;
 
     @Scheduled(fixedDelay= 3000)
     public void runMatchMaking() {
@@ -62,8 +64,8 @@ public class MatchmakerWorker {
             UUID player2Id = UUID.fromString(p2Entry.getValue());
             double ratingDiff = Math.abs(p1Entry.getScore() - p2Entry.getScore());
 
-            log.debug("Attempting to pair player {} (rating {}) with player {} (rating {}) for game {}",
-                    player1Id, p1Entry.getScore(), player2Id, p2Entry.getScore(), gameId);
+            log.debug("Attempting to pair player {} (rating {}) with player {} (rating {}) for game {} with name {}",
+                    player1Id, p1Entry.getScore(), player2Id, p2Entry.getScore(), gameId, game.getName());
 
             boolean paired = queueService.atomicRemovePair(gameId, player1Id, player2Id);
             if(!paired){
@@ -78,6 +80,17 @@ public class MatchmakerWorker {
 
     @Transactional
     protected void createMatch(UUID gameId, UUID player1Id, UUID player2Id, Game game) {
+        Optional<Player> p1Opt = playerRepository.findByIdAndGameId(player1Id, gameId);
+        Optional<Player> p2Opt = playerRepository.findByIdAndGameId(player2Id, gameId);
+
+        if (p1Opt.isEmpty() || p2Opt.isEmpty()) {
+            log.error("Player not found during match creation — gameId={}, p1={}, p2={}", gameId, player1Id, player2Id);
+            return;
+        }
+
+        Player player1 = p1Opt.get();
+        Player player2 = p2Opt.get();
+
         Match match = Match.builder()
                 .gameId(gameId)
                 .player1Id(player1Id)
@@ -89,7 +102,11 @@ public class MatchmakerWorker {
         log.info("Match created: id={}, game={}, player1={}, player2={}",
                 saved.getId(), gameId, player1Id, player2Id);
 
-//      Later we will trigger webhook to game.getWebhookUrl()
+        if(game.getWebhookUrl() != null && !game.getWebhookUrl().isBlank()){
+            webhookDeliveryService.scheduleMatchFoundWebhook(match, player1 , player2, game.getWebhookUrl());
+        } else {
+            log.warn("Game {} has no webhookUrl configured — skipping webhook delivery", gameId);
+        }
     }
 
 }
