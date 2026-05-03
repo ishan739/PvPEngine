@@ -23,5 +23,6 @@ public class CreateGameRequest {
     @Email(message = "Invalid email format")
     private String contactEmail;
 
+    @NotBlank(message = "Webhook url is necessary for updates")
     private String webhookUrl;
 }
