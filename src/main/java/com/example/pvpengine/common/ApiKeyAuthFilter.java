@@ -29,7 +29,9 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
     private static final Set<String> PUBLIC_PATH_PREFIXES = Set.of(
             "/api/v1/games",
-            "/actuator"
+            "/actuator",
+            "/swagger-ui",
+            "/v3/api-docs"
     );
 
     private final ApiKeyService apiKeyService;

@@ -2,6 +2,9 @@ package com.example.pvpengine.leaderboard;
 
 import com.example.pvpengine.common.TenantContext;
 import com.example.pvpengine.common.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -16,6 +19,10 @@ import java.util.*;
 @RestController
 @RequestMapping("api/v1/leaderboard")
 @RequiredArgsConstructor
+@Tag(
+        name = "Leaderboard",
+        description = "Retrieve top-ranked players for the authenticated game."
+)
 public class LeaderboardController {
 
     private static final String LEADERBOARD_KEY_PREFIX = "leaderboard:";
@@ -23,8 +30,13 @@ public class LeaderboardController {
 
     private final RedisTemplate<String , String> redisTemplate;
 
+    @Operation(
+            summary = "Get top N ranked players",
+            description = "Returns leaderboard rankings for the authenticated game. The endpoint uses API key authentication via `X-API-KEY`. The `limit` value is capped at 100."
+    )
     @GetMapping
     public ResponseEntity<ApiResponse<List<LeaderboardEntry>>> getTopPlayers(
+            @Parameter(description = "Number of top players to return (min 1, max 100)", example = "10")
             @RequestParam(defaultValue = "10") int limit){
         UUID gameId = TenantContext.requireGameId();
 
