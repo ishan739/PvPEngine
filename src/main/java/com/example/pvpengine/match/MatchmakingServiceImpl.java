@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
@@ -36,6 +37,7 @@ public class MatchmakingServiceImpl implements MatchmakingService{
             throw PvpException.conflict("Player is already in matchmaking queue");
         }
 
+        player.setLastActiveAt(OffsetDateTime.now());
         queueService.addToQueue(gameId , playerId , player.getRating());
         log.info("Player {} joined queue for game {} with rating {}", playerId, gameId, player.getRating());
     }
